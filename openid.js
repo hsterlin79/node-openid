@@ -1251,6 +1251,11 @@ var _checkSignatureUsingAssociation = function(params, callback)
       return callback({ message:'Association handle does not match provided endpoint' }, {authenticated: false});
     }
     
+    console.log("HNS _checkSignatureUsingAssociation");
+    console.log("HNS association from db %j", association);
+    console.log("HNS association from request " + params['openid.assoc_handle']);
+    console.log("HNS openid signed parms " + params['openid.signed']);
+
     var message = '';
     var signedParams = params['openid.signed'].split(',');
     for(var i = 0; i < signedParams.length; i++)
@@ -1264,9 +1269,15 @@ var _checkSignatureUsingAssociation = function(params, callback)
       message += param + ':' + value + '\n';
     }
 
+    console.log("HNS message to encrypt: " + message);
+
     var hmac = crypto.createHmac(association.type, _fromBase64(association.secret));
     hmac.update(message, 'utf8');
     var ourSignature = hmac.digest('base64');
+
+    console.log("HNS signature from request " + params['openid.sig']);
+    console.log("HNS signature from db assoc " + ourSignature);
+
 
     if(ourSignature == params['openid.sig'])
     {
